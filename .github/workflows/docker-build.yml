@@ -9,6 +9,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      - id: lastcommit
+        uses: nmbgeek/github-action-get-latest-release@main
+        with:
+          owner: abtassociates
+          repo: eva
+          branch: main
       - name: set release date
         run: |
           echo "RELEASE_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
@@ -22,4 +28,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: nmbgeek/eva-hud-hmis:latest, nmbgeek/eva-hud-hmis:${{ env.RELEASE_DATE }}
+          tags: nmbgeek/eva-hud-hmis:latest, nmbgeek/eva-hud-hmis:${{ env.RELEASE_DATE }}, nmbgeek/eva-hud-hmis:${{ steps.lastcommit.outputs.shorthash }}
