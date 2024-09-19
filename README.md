@@ -2,12 +2,12 @@
 
 Runs the Abt Associates Eva tool in a Shiny Docker.  Eva code can be found here: https://github.com/abtassociates/eva
 
-To run in docker simply run `docker run -d -p 3838:3838 nmbgeek/eva-hud-hmis:latest` then in your web browser visit http://localhost:3838
+To run in docker simply run `docker run -d -p 3838:3838 nmbgeek/eva-hud-hmis:phase2-dev` then in your web browser visit http://localhost:3838
 
 If you want to make your own changes to Eva you can run it from a local directory by replacing `YOUR_LOCAL_DIR` with the path to Eva in this docker run command:
 
 ```
-docker run -d --name eva-docker -p 3838:3838 -v YOUR_LOCAL_DIR:/app nmbgeek/eva-hud-hmis:latest R '-e renv::restore();shiny::runApp("/app",host="0.0.0.0",port=3838)'
+docker run -d --name eva-docker -p 3838:3838 -v YOUR_LOCAL_DIR:/app nmbgeek/eva-hud-hmis:phase2-dev R '-e renv::restore();shiny::runApp("/app",host="0.0.0.0",port=3838)'
 ```
 
 Removing the -d will allow you to see what is happening for troubleshooting otherwise you can just run it detached.
@@ -48,4 +48,4 @@ RUN Rscript -e 'renv::restore()'
 EXPOSE 3838
 
 # run app on container start
-CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 3838)"]```
+CMD ['R', '-e', 'shiny::runApp("/app", host = "0.0.0.0", port = 3838)']```
