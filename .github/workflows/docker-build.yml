@@ -2,7 +2,7 @@ name: Docker Build and Push
 
 on:
   repository_dispatch:
-    types: [build-docker-image]
+    types: [build-docker-image-dev]
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
         with:
           owner: abtassociates
           repo: eva
-          branch: main
+          branch: phase2-dev
       - name: set release date
         run: |
           echo "RELEASE_DATE=$(date --rfc-3339=date)" >> ${GITHUB_ENV}
@@ -27,4 +27,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: nmbgeek/eva-hud-hmis:latest, nmbgeek/eva-hud-hmis:${{ env.RELEASE_DATE }}, nmbgeek/eva-hud-hmis:${{ steps.lastcommit.outputs.shorthash }}
+          tags: nmbgeek/eva-hud-hmis:phase2-dev, nmbgeek/eva-hud-hmis:phase2-dev-${{ env.RELEASE_DATE }}, nmbgeek/eva-hud-hmis:phase2-dev-${{ steps.lastcommit.outputs.shorthash }}
