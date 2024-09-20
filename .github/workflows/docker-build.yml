@@ -9,12 +9,12 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Restore cached commit hash
-        id: restore-cache
-        uses: actions/cache@v3
+    
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          path: eva_dev_commit_hash.txt
-          key: eva-dev-commit-hash
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Get latest commit hash from upstream repository
         id: lastcommit
@@ -23,61 +23,34 @@ jobs:
           owner: abtassociates
           repo: eva
           branch: phase2-dev
-
-      - name: Read cached commit hash
-        id: read-cached-commit
-        run: |
-          if [ -f eva_commit_hash.txt ]; then
-            CACHED_COMMIT=$(cat eva_commit_hash.txt)
-            echo "Cached commit hash: $CACHED_COMMIT"
-            echo "CACHED_COMMIT=$CACHED_COMMIT" >> $GITHUB_ENV
-          else
-            echo "No cached commit hash found."
-            echo "CACHED_COMMIT=" >> $GITHUB_ENV
-          fi
-
-      - name: Compare commit hashes
-        id: compare-commits
+          
+      - name: Set ENV Commit Hash
         run: |
           LATEST_COMMIT="${{ steps.lastcommit.outputs.shorthash }}"
-          if [ "$CACHED_COMMIT" != "$LATEST_COMMIT" ]; then
-            echo "New commit detected."
-            echo "proceed=true" >> $GITHUB_OUTPUT
+          
+      - name: Check if Docker image exists
+        id: check_image
+        run: |
+          if docker manifest inspect nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT > /dev/null 2>&1; then
+            echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
+            echo "Image with tag $LATEST_COMMIT already exists."
           else
-            echo "No new commit detected."
-            echo "proceed=false" >> $GITHUB_OUTPUT
+            echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
+            echo "Image with tag $LATEST_COMMIT does not exist."
           fi
 
-      - name: Proceed if new commit is detected
-        if: steps.compare-commits.outputs.proceed == 'true'
+      - name: Proceed if new image needs to be built
+        if: env.IMAGE_EXISTS == 'false'
         run: echo "Proceeding with Docker build and push."
 
-      - name: Update cached commit hash
-        if: steps.compare-commits.outputs.proceed == 'true'
-        run: |
-          echo "${{ steps.lastcommit.outputs.shorthash }}" > eva_commit_hash.txt
-
-      - name: Save updated cache
-        if: steps.compare-commits.outputs.proceed == 'true'
-        uses: actions/cache@v3
-        with:
-          path: eva_dev_commit_hash.txt
-          key: eva-dev-commit-hash
-
       - name: Set release date
-        if: steps.compare-commits.outputs.proceed == 'true'
+        if: env.IMAGE_EXISTS == 'false'
         run: |
           echo "RELEASE_DATE=$(date --utc +"%Y-%m-%d")" >> $GITHUB_ENV
 
-      - name: Log in to Docker Hub
-        if: steps.compare-commits.outputs.proceed == 'true'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push Docker image
-        if: steps.compare-commits.outputs.proceed == 'true'
+        if: env.IMAGE_EXISTS == 'false'
         uses: docker/build-push-action@v3
         with:
           push: true
