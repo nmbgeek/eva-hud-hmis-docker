@@ -26,7 +26,7 @@ jobs:
           
       - name: Set ENV Commit Hash
         run: |
-          LATEST_COMMIT="${{ steps.lastcommit.outputs.shorthash }}"
+           echo "LATEST_COMMIT=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV
           
       - name: Check if Docker image exists
         id: check_image
