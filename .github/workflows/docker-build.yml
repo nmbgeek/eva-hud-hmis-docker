@@ -31,6 +31,7 @@ jobs:
       - name: Check if Docker image exists
         id: check_image
         run: |
+          echo "Checking for nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT"
           if docker manifest inspect nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT > /dev/null 2>&1; then
             echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
             echo "Image with tag $LATEST_COMMIT already exists."
