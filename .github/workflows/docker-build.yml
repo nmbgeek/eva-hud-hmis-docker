@@ -1,0 +1,58 @@
+name: Monitor Upstream and Docker Build and Push
+
+on:
+  schedule:
+    - cron: '* */3 * * *' # Check for new commits every 3 hours
+  workflow_dispatch: # Allow manual dispatch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Get latest commit hash from upstream repository
+        id: lastcommit
+        uses: nmbgeek/github-action-get-latest-commit@main
+        with:
+          owner: abtassociates
+          repo: eva
+          branch: main
+
+      - name: Set ENV Commit Hash
+        run: |
+          echo "LATEST_COMMIT=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV
+
+      - name: Check if Docker image exists
+        id: check_image
+        run: |
+          if docker manifest inspect nmbgeek/eva-hud-hmis:${{ env.LATEST_COMMIT }} > /dev/null 2>&1; then
+            echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
+            echo "Image with tag $LATEST_COMMIT already exists."
+          else
+            echo "IMAGE_EXISTS=false" >> $GITHUB_ENV
+            echo "Image with tag $LATEST_COMMIT does not exist."
+          fi
+
+      - name: Proceed if new image needs to be built
+        if: ${{ env.IMAGE_EXISTS == 'false' }}
+        run: echo "Proceeding with Docker build and push."
+
+      - name: Set release date
+        if: ${{ env.IMAGE_EXISTS == 'false' }}
+        run: |
+          echo "RELEASE_DATE=$(date --utc +"%Y-%m-%d")" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        if: ${{ env.IMAGE_EXISTS == 'false' }}
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: |
+            nmbgeek/eva-hud-hmis:latest
+            nmbgeek/eva-hud-hmis:${{ env.RELEASE_DATE }}
+            nmbgeek/eva-hud-hmis:${{ env.LATEST_COMMIT }}
