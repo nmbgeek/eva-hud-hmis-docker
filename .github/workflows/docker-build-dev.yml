@@ -2,7 +2,7 @@ name: Monitor Upstream and Docker Build and Push - Phase2-dev
 
 on:
   schedule:
-    - cron: '* */3 * * *' # Check for new commits every 3 hours
+    - cron: '0 */3 * * *' # Check for new commits every 3 hours
   workflow_dispatch: # Allow manual dispatch
 
 jobs:
