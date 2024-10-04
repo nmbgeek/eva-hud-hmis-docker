@@ -1,5 +1,5 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/shiny:4.3.3
+FROM rocker/shiny:4.4.1
 
 # install debian packages needed for R compilation and git
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
