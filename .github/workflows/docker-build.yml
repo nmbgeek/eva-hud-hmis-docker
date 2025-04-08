@@ -2,14 +2,13 @@ name: Monitor Upstream and Docker Build and Push
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Check for new commits every 15 minutes
-  workflow_dispatch:        # Allow manual dispatch
+    - cron: '*/30 * * * *' # Check for new commits every 15 minutes
+  workflow_dispatch: # Allow manual dispatch
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-    
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -22,17 +21,17 @@ jobs:
         with:
           owner: abtassociates
           repo: eva
-          branch: phase2-dev
-          
+          branch: dev
+
       - name: Set ENV Commit Hash
         run: |
-           echo "LATEST_COMMIT=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV
-          
+          echo "LATEST_COMMIT=${{ steps.lastcommit.outputs.shorthash }}" >> $GITHUB_ENV
+
       - name: Check if Docker image exists
         id: check_image
         run: |
-          echo "Checking for nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT"
-          if docker manifest inspect nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT > /dev/null 2>&1; then
+          echo "Checking for nmbgeek/eva-hud-hmis:dev-$LATEST_COMMIT"
+          if docker manifest inspect nmbgeek/eva-hud-hmis:dev-$LATEST_COMMIT > /dev/null 2>&1; then
             echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
             echo "Image with tag $LATEST_COMMIT already exists."
           else
@@ -40,17 +39,15 @@ jobs:
             echo "Image with tag $LATEST_COMMIT does not exist."
           fi
 
-
       - name: Set release date
         run: |
           echo "RELEASE_DATE=$(date --utc +"%Y-%m-%d")" >> $GITHUB_ENV
-
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: |
-            nmbgeek/eva-hud-hmis:phase2-dev
-            nmbgeek/eva-hud-hmis:phase2-dev-${{ env.RELEASE_DATE }}
-            nmbgeek/eva-hud-hmis:phase2-dev-${{ steps.lastcommit.outputs.shorthash }}
+            nmbgeek/eva-hud-hmis:dev
+            nmbgeek/eva-hud-hmis:dev-${{ env.RELEASE_DATE }}
+            nmbgeek/eva-hud-hmis:dev-${{ steps.lastcommit.outputs.shorthash }}

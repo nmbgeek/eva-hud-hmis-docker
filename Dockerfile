@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get clean
 
 # clone eva
-RUN git clone -b phase2-dev https://github.com/abtassociates/eva.git /app
+RUN git clone -b dev https://github.com/abtassociates/eva.git /app
 
 WORKDIR /app
 
