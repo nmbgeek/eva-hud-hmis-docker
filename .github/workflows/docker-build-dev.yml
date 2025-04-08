@@ -1,8 +1,8 @@
-name: Monitor Upstream and Docker Build and Push - Phase2-dev
+name: Monitor Upstream and Docker Build and Push - dev
 
 on:
   schedule:
-    - cron: '0 */3 * * *' # Check for new commits every 3 hours
+    - cron: '0 */6 * * *' # Check for new commits every 3 hours
   workflow_dispatch: # Allow manual dispatch
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
         with:
           owner: abtassociates
           repo: eva
-          branch: phase2-dev
+          branch: dev
 
       - name: Set ENV Commit Hash
         run: |
@@ -30,8 +30,8 @@ jobs:
       - name: Check if Docker image exists
         id: check_image
         run: |
-          echo "Checking for nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT"
-          if docker manifest inspect nmbgeek/eva-hud-hmis:phase2-dev-$LATEST_COMMIT > /dev/null 2>&1; then
+          echo "Checking for nmbgeek/eva-hud-hmis:dev-$LATEST_COMMIT"
+          if docker manifest inspect nmbgeek/eva-hud-hmis:dev-$LATEST_COMMIT > /dev/null 2>&1; then
             echo "IMAGE_EXISTS=true" >> $GITHUB_ENV
             echo "Image with tag $LATEST_COMMIT already exists."
           else
@@ -43,7 +43,7 @@ jobs:
         if: env.IMAGE_EXISTS == 'false'
         uses: actions/checkout@v4
         with:
-          ref: phase2-dev
+          ref: dev
           fetch-depth: 0
 
       - name: Proceed if new image needs to be built
@@ -62,6 +62,6 @@ jobs:
           context: . # Set the context to the root of the checked-out repo
           push: true
           tags: |
-            nmbgeek/eva-hud-hmis:phase2-dev
-            nmbgeek/eva-hud-hmis:phase2-dev-${{ env.RELEASE_DATE }}
-            nmbgeek/eva-hud-hmis:phase2-dev-${{ steps.lastcommit.outputs.shorthash }}
+            nmbgeek/eva-hud-hmis:dev
+            nmbgeek/eva-hud-hmis:dev-${{ env.RELEASE_DATE }}
+            nmbgeek/eva-hud-hmis:dev-${{ steps.lastcommit.outputs.shorthash }}
