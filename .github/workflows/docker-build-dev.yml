@@ -22,6 +22,7 @@ jobs:
           owner: abtassociates
           repo: eva
           branch: dev
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set ENV Commit Hash
         run: |
@@ -45,6 +46,7 @@ jobs:
         with:
           ref: dev
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Proceed if new image needs to be built
         if: env.IMAGE_EXISTS == 'false'
