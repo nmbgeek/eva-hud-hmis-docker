@@ -1,6 +1,6 @@
 # eva-hud-hmis-docker
 
-Runs the Abt Associates Eva tool in a Shiny Docker.  Eva code can be found here: https://github.com/abtassociates/eva
+Runs the Abt Associates Eva tool in a Shiny Docker. Eva code can be found here: https://github.com/abtassociates/eva
 
 To run in docker simply run `docker run -d -p 3838:3838 nmbgeek/eva-hud-hmis:latest` then in your web browser visit http://localhost:3838
 
@@ -15,7 +15,8 @@ Removing the -d will allow you to see what is happening for troubleshooting othe
 When you make changes to the code you can restart the docker by running: `docker restart eva-docker`
 
 Dockerfile for reference:
-```# Base image https://hub.docker.com/u/rocker/
+
+````# Base image https://hub.docker.com/u/rocker/
 FROM rocker/shiny:latest
 
 # install debian packages needed for R compilation and git
@@ -49,3 +50,4 @@ EXPOSE 3838
 
 # run app on container start
 CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 3838)"]```
+````
