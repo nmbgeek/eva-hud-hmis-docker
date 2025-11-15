@@ -21,8 +21,8 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     rm -rf /var/lib/apt/lists/*
 
 
-# clone eva
-RUN git clone https://github.com/abtassociates/eva.git /app
+# clone eva dev branch
+RUN git clone -b dev https://github.com/abtassociates/eva.git /app
 
 WORKDIR /app
 
