@@ -1,34 +1,25 @@
 # Base image https://hub.docker.com/u/rocker/
-FROM rocker/shiny:4.5.1
+FROM rocker/shiny:4.5.2
 
 # install debian packages needed for R compilation and git
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
-    libxml2-dev \
+    cmake \
+    xz-utils \
     libssl-dev \
+    libxml2-dev \
+    libnode-dev \
+    libicu-dev \
     libharfbuzz-dev \
     libfribidi-dev \
     libfreetype6-dev \
     libpng-dev \
-    libtiff-dev \
+    libtiff5-dev \
     libjpeg-dev \
     libwebp-dev \
-    libwebpdemux2 \
-    libwebpmux3 \
-    pkg-config \
-    cmake \
-    libnode-dev \
-    chromium \
-    chromium-driver \
-    xvfb \
-    fonts-liberation \
-    libnss3 \
-    libxss1 \
-    libgbm1 \
-    libxshmfence1 \
-    xz-utils  \
     git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 # clone eva
 RUN git clone https://github.com/abtassociates/eva.git /app
