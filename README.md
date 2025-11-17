@@ -1,8 +1,8 @@
-# eva-hud-hmis-docker
+# Run Abt's Eva via Docker #
 
 Runs the Abt Associates Eva tool in a Shiny Docker. Eva code can be found here: https://github.com/abtassociates/eva
 
-To run in docker simply run `docker run -d -p 3838:3838 nmbgeek/eva-hud-hmis:latest` then in your web browser visit http://localhost:3838
+Download Docker if you don't already have it at [https://www.docker.com/get-started/](https://www.docker.com/get-started/) and simply run `docker run -d -p 3838:3838 nmbgeek/eva-hud-hmis:latest` from your command line and then in your web browser visit http://localhost:3838
 
 If you want to make your own changes to Eva you can run it from a local directory by replacing `YOUR_LOCAL_DIR` with the path to Eva in this docker run command:
 
